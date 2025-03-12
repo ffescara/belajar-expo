@@ -32,11 +32,33 @@ function UserLocation() {
         console.log('Tracking started?', hasStarted);
     };
 
+    const sendLocation = async (latitude, longitude) => {
+        try {
+            const response = await fetch('https://vm.aio.co.id:20010/ps-run/api/location', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    latitude,
+                    longitude,
+                }),
+            });
+
+            if (response.ok) {
+                console.log('Location sent successfully');
+            }
+        } catch (error) {
+            console.error('Error sending location:', error);
+        }
+    }
+
     useEffect(() => {
         // Listener untuk menerima event lokasi terbaru
         const subscription = locationEventEmitter.addListener('locationUpdated', (coords) => {
             setLatitude(coords.latitude);
             setLongitude(coords.longitude);
+            sendLocation(coords.latitude, coords.longitude);
         });
 
         return () => {
